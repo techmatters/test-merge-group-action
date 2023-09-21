@@ -20,28 +20,48 @@ jobs:
         run: echo "Would run tests here"
 
       - name: Create or replace tag based on commit message
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const msg = process.env.MSG;
+            const pattern = /CHI-[0-9]+/;
+            const match = msg.match(pattern);
+
+            if (!match) {
+              console.log("No matching pattern found in the commit message. Skipping this step.");
+              return;
+            }
+
+            const tagName = `qa/${match[0]}`;
+
+            // Check if tag exists
+            try {
+              await github.rest.git.getRef({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                ref: `tags/${tagName}`
+              });
+
+              // If the tag exists, delete it
+              console.log(`Tag ${tagName} already exists. Deleting it.`);
+              await github.rest.git.deleteRef({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                ref: `tags/${tagName}`
+              });
+            } catch (error) {
+              if (error.status !== 404) {
+                throw error;
+              }
+            }
+
+            // Create the new tag
+            console.log(`Creating new tag: ${tagName}`);
+            await github.rest.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: `refs/tags/${tagName}`,
+              sha: context.sha
+            });
         env:
           MSG: ${{ github.event.merge_group.head_commit.message }}
-        run: |
-          MATCH=$(echo "$MSG" | grep -oE 'CHI-[0-9]+' || true)
-
-          if [ -z "$MATCH" ]; then
-            echo "No matching pattern found in the commit message. Skipping this step."
-            exit 0
-          fi
-
-          echo "Pattern found: $MATCH"
-          TAG="qa/$MATCH"
-
-          # Check if tag already exists
-          EXISTS=$(git tag -l "$TAG")
-          if [ ! -z "$EXISTS" ]; then
-            echo "Tag $TAG already exists. Deleting it."
-            git tag -d "$TAG"
-            git push origin :refs/tags/"$TAG"
-          fi
-
-          # Create new tag
-          echo "Creating new tag: $TAG"
-          git tag "$TAG"
-          git push origin "$TAG"
