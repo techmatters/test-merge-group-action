@@ -16,6 +16,9 @@ jobs:
           GITHUB_CONTEXT: ${{ toJson(github) }}
         run: echo "$GITHUB_CONTEXT"
 
+      - name: Tests
+        run: echo "Would run tests here"
+
       - name: Create or replace ticket qa tag based on commit message
         env:
           MSG: ${{ github.event.merge_group.head_commit.message }}
