@@ -1,14 +1,10 @@
-name: On Merge Group
+name: On Pull Request
 
 on:
-  merge_group:
   pull_request:
-    branches:
-      - master
 
 jobs:
   debug:
-    if: ${{ github.event_name == 'merge_group' }}
     runs-on: ubuntu-latest
     steps:
       - name: Dump GitHub context
