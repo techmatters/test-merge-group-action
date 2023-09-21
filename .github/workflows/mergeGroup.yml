@@ -1,14 +1,16 @@
 name: On Merge Group
 
 on:
+  pull_request:
+    branches:
+      - main
   merge_group:
 
 jobs:
   debug:
+    if: ${{ github.event_name == 'merge_group' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-
       - name: Dump GitHub context
         env:
           GITHUB_CONTEXT: ${{ toJson(github) }}
