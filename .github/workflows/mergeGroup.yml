@@ -16,16 +16,11 @@ jobs:
           GITHUB_CONTEXT: ${{ toJson(github) }}
         run: echo "$GITHUB_CONTEXT"
 
-      - name: Dump PR title/commit message
-        env:
-          MSG: ${{ github.event.merge_group.head_commit.message }}
-        run: echo "$MSG"
-
-      - name: Create or replace ticket tag based on commit message
+      - name: Create or replace ticket qa tag based on commit message
         env:
           MSG: ${{ github.event.merge_group.head_commit.message }}
         run: |
-          MATCH=$(echo "$MSG" | grep -oE 'CHI-[0-9]+')
+          MATCH=$(echo "$MSG" | grep -oE 'CHI-[0-9]+' || true)
           if [ ! -z "$MATCH" ]; then
             echo "Pattern found: $MATCH"
             TAG="qa/$MATCH"
