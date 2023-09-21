@@ -20,3 +20,27 @@ jobs:
         env:
           MSG: ${{ github.event.merge_group.head_commit.message }}
         run: echo "$MSG"
+
+      - name: Create or replace ticket tag based on commit message
+        env:
+          MSG: ${{ github.event.merge_group.head_commit.message }}
+        run: |
+          MATCH=$(echo "$MSG" | grep -oE 'CHI-[0-9]+')
+          if [ ! -z "$MATCH" ]; then
+            echo "Pattern found: $MATCH"
+            TAG="qa/$MATCH"
+
+            # Check if tag already exists
+            EXISTS=$(git tag -l "$TAG")
+            if [ ! -z "$EXISTS" ]; then
+              echo "Tag $TAG already exists. Deleting it."
+              git tag -d "$TAG"
+              git push origin :refs/tags/"$TAG"
+            fi
+
+            # Create new tag
+            echo "Creating new tag: $TAG"
+            git tag "$TAG"
+            git push origin "$TAG"
+          else
+            echo "No matching pattern found in the commit message."
