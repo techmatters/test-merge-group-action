@@ -7,3 +7,5 @@ This is a test repo for github action [merge groups](https://docs.github.com/en/
 - The check for the merge group job must be a required check under the repository's
 Settings > Branches > Branch protection rules
 - Merge groups don't work with * branches. You must specify a full branch name.
+- Merge group triggers WILL run on PR actions. We have to use a hacky if statement to work around this limitation. That causes a lot of noise in the action history.
+- Merge strategy has to be set to squash or merge commit as part of the merge group config. Can't be specified by developer.
