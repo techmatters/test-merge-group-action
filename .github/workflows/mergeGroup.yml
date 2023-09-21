@@ -21,5 +21,3 @@ jobs:
           EVENT_CONTEXT: ${{ toJson(github.event) }}
         run: echo "$EVENT_CONTEXT"
 
-      - name: fail
-        run: exit 1
