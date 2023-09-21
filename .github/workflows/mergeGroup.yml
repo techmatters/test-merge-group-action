@@ -45,8 +45,3 @@ jobs:
           echo "Creating new tag: $TAG"
           git tag "$TAG"
           git push origin "$TAG"
-
-
-      - name: fail
-        run: exit 1
-
