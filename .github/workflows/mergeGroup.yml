@@ -16,8 +16,7 @@ jobs:
           GITHUB_CONTEXT: ${{ toJson(github) }}
         run: echo "$GITHUB_CONTEXT"
 
-      - name: Dump event context
+      - name: Dump PR title/commit message
         env:
-          EVENT_CONTEXT: ${{ toJson(github.event) }}
-        run: echo "$EVENT_CONTEXT"
-
+          MSG: ${{ github.event.merge_group.head_commit.message }}
+        run: echo "$MSG"
