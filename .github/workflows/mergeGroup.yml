@@ -5,6 +5,14 @@ on:
   pull_request:
 
 jobs:
+  fake:
+    if: ${{ github.event_name == 'pull_request' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fake
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: echo "nope"
   debug:
     if: ${{ github.event_name == 'merge_group' }}
     runs-on: ubuntu-latest
