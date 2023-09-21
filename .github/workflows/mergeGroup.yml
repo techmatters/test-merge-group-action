@@ -39,3 +39,7 @@ jobs:
             git push origin "$TAG"
           else
             echo "No matching pattern found in the commit message."
+
+      - name: fail
+        run: exit 1
+
